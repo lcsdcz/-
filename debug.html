@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调试页面 - 高中语文早读助手</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            margin: 20px;
+            background: #f0f0f0;
+        }
+        .debug-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .debug-btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .debug-btn:hover {
+            background: #0056b3;
+        }
+        .debug-btn.danger {
+            background: #dc3545;
+        }
+        .debug-btn.danger:hover {
+            background: #c82333;
+        }
+        .debug-btn.success {
+            background: #28a745;
+        }
+        .debug-btn.success:hover {
+            background: #218838;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #007bff;
+            background: #f8f9fa;
+        }
+        .log-error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .log-warning {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+        .performance-bar {
+            background: #e9ecef;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
+        .performance-fill {
+            background: #28a745;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        .data-table th, .data-table td {
+            border: 1px solid #dee2e6;
+            padding: 8px;
+            text-align: left;
+        }
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-ok { background: #28a745; }
+        .status-error { background: #dc3545; }
+        .status-warning { background: #ffc107; }
+        .status-info { background: #17a2b8; }
+    </style>
+</head>
+<body>
+    <h1>🔍 高中语文早读助手 - 调试页面</h1>
+    
+    <div class="debug-section">
+        <h2>📋 文件检查</h2>
+        <button class="debug-btn" onclick="checkFiles()">检查文件</button>
+        <button class="debug-btn" onclick="checkDependencies()">检查依赖</button>
+        <div id="fileResult" class="result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>🔧 JavaScript功能测试</h2>
+        <button class="debug-btn" onclick="testJavaScript()">测试JavaScript</button>
+        <button class="debug-btn" onclick="testFunctions()">测试函数</button>
+        <button class="debug-btn" onclick="testDatabase()">测试数据库</button>
+        <button class="debug-btn" onclick="testPerformance()">性能测试</button>
+        <div id="jsResult" class="result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>🎯 模式选择测试</h2>
+        <button class="debug-btn" onclick="testModeSelection()">测试模式选择</button>
+        <button class="debug-btn" onclick="testChapterSelection()">测试章节选择</button>
+        <button class="debug-btn" onclick="testPoemSelection()">测试诗文选择</button>
+        <div id="modeResult" class="result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>📚 数据库内容</h2>
+        <button class="debug-btn" onclick="showDatabase()">显示数据库</button>
+        <button class="debug-btn" onclick="validateDatabase()">验证数据完整性</button>
+        <button class="debug-btn" onclick="exportDatabase()">导出数据</button>
+        <div id="dbResult" class="result"></div>
+    </div>
+
+    <div class="debug-section">
+        <h2>🚀 性能监控</h2>
+        <button class="debug-btn" onclick="startPerformanceMonitoring()">开始监控</button>
+        <button class="debug-btn" onclick="stopPerformanceMonitoring()">停止监控</button>
+        <button class="debug-btn" onclick="clearPerformanceData()">清除数据</button>
+        <div id="performanceResult" class="result"></div>
+    </div>
+
+    <div class="debug-section">
+        <h2>📝 错误日志</h2>
+        <button class="debug-btn" onclick="showErrorLog()">显示错误日志</button>
+        <button class="debug-btn" onclick="clearErrorLog()">清除日志</button>
+        <button class="debug-btn" onclick="exportErrorLog()">导出日志</button>
+        <div id="errorLogResult" class="result"></div>
+    </div>
+
+    <div class="debug-section">
+        <h2>🧪 压力测试</h2>
+        <button class="debug-btn" onclick="runStressTest()">运行压力测试</button>
+        <button class="debug-btn" onclick="testMemoryUsage()">测试内存使用</button>
+        <button class="debug-btn danger" onclick="clearAllData()">清除所有数据</button>
+        <div id="stressTestResult" class="result"></div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // 全局变量
+        let performanceData = [];
+        let errorLog = [];
+        let performanceMonitoring = false;
+        let performanceInterval;
+
+        // 错误日志记录器
+        window.addEventListener('error', function(e) {
+            const errorEntry = {
+                timestamp: new Date().toISOString(),
+                message: e.message,
+                filename: e.filename,
+                lineno: e.lineno,
+                colno: e.colno,
+                stack: e.error ? e.error.stack : '无堆栈信息'
+            };
+            errorLog.push(errorEntry);
+            console.error('错误已记录:', errorEntry);
+        });
+
+        // 性能监控
+        function startPerformanceMonitoring() {
+            if (performanceMonitoring) return;
+            
+            performanceMonitoring = true;
+            performanceData = [];
+            performanceInterval = setInterval(() => {
+                const memory = performance.memory;
+                const timing = performance.timing;
+                
+                performanceData.push({
+                    timestamp: Date.now(),
+                    memory: {
+                        used: memory ? memory.usedJSHeapSize : 0,
+                        total: memory ? memory.totalJSHeapSize : 0,
+                        limit: memory ? memory.jsHeapSizeLimit : 0
+                    },
+                    timing: {
+                        loadTime: timing ? timing.loadEventEnd - timing.navigationStart : 0,
+                        domReady: timing ? timing.domContentLoadedEventEnd - timing.navigationStart : 0
+                    }
+                });
+                
+                updatePerformanceDisplay();
+            }, 1000);
+            
+            document.getElementById('performanceResult').innerHTML = '<div class="success">✅ 性能监控已开始</div>';
+        }
+
+        function stopPerformanceMonitoring() {
+            if (!performanceMonitoring) return;
+            
+            performanceMonitoring = false;
+            clearInterval(performanceInterval);
+            document.getElementById('performanceResult').innerHTML = '<div class="warning">⚠️ 性能监控已停止</div>';
+        }
+
+        function clearPerformanceData() {
+            performanceData = [];
+            document.getElementById('performanceResult').innerHTML = '<div class="info">ℹ️ 性能数据已清除</div>';
+        }
+
+        function updatePerformanceDisplay() {
+            if (performanceData.length === 0) return;
+            
+            const latest = performanceData[performanceData.length - 1];
+            const memory = latest.memory;
+            const memoryUsage = memory.total > 0 ? (memory.used / memory.total * 100).toFixed(1) : 0;
+            
+            let html = '<div class="info">📊 实时性能数据:</div>';
+            html += `<div>内存使用: ${(memory.used / 1024 / 1024).toFixed(2)} MB / ${(memory.total / 1024 / 1024).toFixed(2)} MB</div>`;
+            html += `<div class="performance-bar"><div class="performance-fill" style="width: ${memoryUsage}%"></div></div>`;
+            html += `<div>使用率: ${memoryUsage}%</div>`;
+            html += `<div>数据点数量: ${performanceData.length}</div>`;
+            
+            document.getElementById('performanceResult').innerHTML = html;
+        }
+
+        function checkFiles() {
+            const result = document.getElementById('fileResult');
+            try {
+                // 检查必要的元素是否存在
+                const modeSelection = document.getElementById('mode-selection');
+                const chapterSelection = document.getElementById('chapterSelection');
+                
+                if (modeSelection && chapterSelection) {
+                    result.innerHTML = '<div class="success">✅ HTML元素检查通过</div>';
+                } else {
+                    result.innerHTML = '<div class="error">❌ HTML元素缺失</div>';
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ 错误: ${error.message}</div>`;
+            }
+        }
+
+        function checkDependencies() {
+            const result = document.getElementById('fileResult');
+            const dependencies = [
+                { name: 'script.js', check: () => typeof window.currentMode !== 'undefined' },
+                { name: 'poems-data.js', check: () => typeof window.poemDatabase !== 'undefined' },
+                { name: 'styles.css', check: () => document.querySelector('link[href*="styles.css"]') !== null }
+            ];
+            
+            let html = '<div class="info">📦 依赖检查结果:</div>';
+            dependencies.forEach(dep => {
+                try {
+                    const status = dep.check();
+                    const statusClass = status ? 'success' : 'error';
+                    const statusIcon = status ? '✅' : '❌';
+                    html += `<div class="${statusClass}">${statusIcon} ${dep.name}: ${status ? '已加载' : '未加载'}</div>`;
+                } catch (error) {
+                    html += `<div class="error">❌ ${dep.name}: 检查失败 - ${error.message}</div>`;
+                }
+            });
+            
+            result.innerHTML = html;
+        }
+        
+        function testJavaScript() {
+            const result = document.getElementById('jsResult');
+            try {
+                if (typeof poemDatabase !== 'undefined') {
+                    result.innerHTML = '<div class="success">✅ poemDatabase 已定义</div>';
+                } else {
+                    result.innerHTML = '<div class="error">❌ poemDatabase 未定义</div>';
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ 错误: ${error.message}</div>`;
+            }
+        }
+        
+        function testFunctions() {
+            const result = document.getElementById('jsResult');
+            const functions = ['setMode', 'selectChapter', 'displayPoemList', 'selectPoem'];
+            let missingFunctions = [];
+            
+            functions.forEach(func => {
+                if (typeof window[func] !== 'function') {
+                    missingFunctions.push(func);
+                }
+            });
+            
+            if (missingFunctions.length === 0) {
+                result.innerHTML = '<div class="success">✅ 所有函数都存在</div>';
+            } else {
+                result.innerHTML = `<div class="error">❌ 缺失函数: ${missingFunctions.join(', ')}</div>`;
+            }
+        }
+        
+        function testDatabase() {
+            const result = document.getElementById('jsResult');
+            try {
+                if (typeof poemDatabase !== 'undefined') {
+                    const chapters = Object.keys(poemDatabase);
+                    let totalPoems = 0;
+                    let totalExercises = 0;
+                    
+                    chapters.forEach(chapter => {
+                        totalPoems += poemDatabase[chapter].length;
+                        poemDatabase[chapter].forEach(poem => {
+                            if (poem.exercises) {
+                                totalExercises += poem.exercises.length;
+                            }
+                        });
+                    });
+                    
+                    result.innerHTML = `
+                        <div class="success">
+                            ✅ 数据库正常<br>
+                            章节数: ${chapters.length}<br>
+                            总诗文数: ${totalPoems}<br>
+                            总练习数: ${totalExercises}
+                        </div>
+                    `;
+                } else {
+                    result.innerHTML = '<div class="error">❌ 数据库未定义</div>';
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ 错误: ${error.message}</div>`;
+            }
+        }
+
+        function testPerformance() {
+            const result = document.getElementById('jsResult');
+            const startTime = performance.now();
+            
+            // 模拟一些操作
+            let testData = [];
+            for (let i = 0; i < 1000; i++) {
+                testData.push({ id: i, value: Math.random() });
+            }
+            
+            const endTime = performance.now();
+            const duration = endTime - startTime;
+            
+            let performanceRating = '优秀';
+            if (duration > 100) performanceRating = '良好';
+            if (duration > 500) performanceRating = '一般';
+            if (duration > 1000) performanceRating = '较差';
+            
+            result.innerHTML = `
+                <div class="info">
+                    ⚡ 性能测试结果:<br>
+                    测试耗时: ${duration.toFixed(2)}ms<br>
+                    性能评级: ${performanceRating}<br>
+                    测试数据量: ${testData.length}
+                </div>
+            `;
+        }
+        
+        function testModeSelection() {
+            const result = document.getElementById('modeResult');
+            try {
+                if (typeof setMode === 'function') {
+                    // 尝试调用函数
+                    setMode('test');
+                    result.innerHTML = '<div class="success">✅ setMode函数可以调用</div>';
+                } else {
+                    result.innerHTML = '<div class="error">❌ setMode函数不存在</div>';
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ 错误: ${error.message}</div>`;
+            }
+        }
+
+        function testChapterSelection() {
+            const result = document.getElementById('modeResult');
+            try {
+                if (typeof selectChapter === 'function') {
+                    // 检查是否有可用的章节
+                    if (typeof poemDatabase !== 'undefined' && Object.keys(poemDatabase).length > 0) {
+                        const firstChapter = Object.keys(poemDatabase)[0];
+                        selectChapter(firstChapter);
+                        result.innerHTML = `<div class="success">✅ selectChapter函数可以调用，已选择章节: ${firstChapter}</div>`;
+                    } else {
+                        result.innerHTML = '<div class="warning">⚠️ selectChapter函数存在，但数据库为空</div>';
+                    }
+                } else {
+                    result.innerHTML = '<div class="error">❌ selectChapter函数不存在</div>';
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ 错误: ${error.message}</div>`;
+            }
+        }
+
+        function testPoemSelection() {
+            const result = document.getElementById('modeResult');
+            try {
+                if (typeof selectPoem === 'function' && poems && poems.length > 0) {
+                    selectPoem(0);
+                    result.innerHTML = `<div class="success">✅ selectPoem函数可以调用，已选择诗文: ${poems[0].title}</div>`;
+                } else if (typeof selectPoem === 'function') {
+                    result.innerHTML = '<div class="warning">⚠️ selectPoem函数存在，但没有可用的诗文</div>';
+                } else {
+                    result.innerHTML = '<div class="error">❌ selectPoem函数不存在</div>';
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ 错误: ${error.message}</div>`;
+            }
+        }
+        
+        function showDatabase() {
+            const result = document.getElementById('dbResult');
+            try {
+                if (typeof poemDatabase !== 'undefined') {
+                    let html = '<strong>📚 数据库内容:</strong><br><br>';
+                    Object.keys(poemDatabase).forEach(chapter => {
+                        html += `<strong>${chapter}:</strong><br>`;
+                        poemDatabase[chapter].forEach(poem => {
+                            const exerciseCount = poem.exercises ? poem.exercises.length : 0;
+                            html += `- ${poem.title} (${poem.author}) - ${exerciseCount}种练习<br>`;
+                        });
+                        html += '<br>';
+                    });
+                    result.innerHTML = html;
+                } else {
+                    result.innerHTML = '<div class="error">❌ 数据库未定义</div>';
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ 错误: ${error.message}</div>`;
+            }
+        }
+
+        function validateDatabase() {
+            const result = document.getElementById('dbResult');
+            try {
+                if (typeof poemDatabase !== 'undefined') {
+                    let issues = [];
+                    let totalPoems = 0;
+                    let totalExercises = 0;
+                    
+                    Object.keys(poemDatabase).forEach(chapter => {
+                        poemDatabase[chapter].forEach((poem, index) => {
+                            totalPoems++;
+                            
+                            // 检查必要字段
+                            if (!poem.title) issues.push(`${chapter}[${index}]: 缺少标题`);
+                            if (!poem.author) issues.push(`${chapter}[${index}]: 缺少作者`);
+                            if (!poem.content) issues.push(`${chapter}[${index}]: 缺少内容`);
+                            
+                            // 检查练习配置
+                            if (poem.exercises) {
+                                totalExercises += poem.exercises.length;
+                                poem.exercises.forEach((exercise, exIndex) => {
+                                    if (!exercise.type) issues.push(`${chapter}[${index}].exercises[${exIndex}]: 缺少练习类型`);
+                                    if (!exercise.title) issues.push(`${chapter}[${index}].exercises[${exIndex}]: 缺少练习标题`);
+                                });
+                            }
+                        });
+                    });
+                    
+                    if (issues.length === 0) {
+                        result.innerHTML = `
+                            <div class="success">
+                                ✅ 数据验证通过<br>
+                                总诗文数: ${totalPoems}<br>
+                                总练习数: ${totalExercises}
+                            </div>
+                        `;
+                    } else {
+                        result.innerHTML = `
+                            <div class="warning">
+                                ⚠️ 发现 ${issues.length} 个问题:<br>
+                                ${issues.join('<br>')}
+                            </div>
+                        `;
+                    }
+                } else {
+                    result.innerHTML = '<div class="error">❌ 数据库未定义</div>';
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ 错误: ${error.message}</div>`;
+            }
+        }
+
+        function exportDatabase() {
+            try {
+                if (typeof poemDatabase !== 'undefined') {
+                    const dataStr = JSON.stringify(poemDatabase, null, 2);
+                    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                    const url = URL.createObjectURL(dataBlob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'poem-database.json';
+                    link.click();
+                    URL.revokeObjectURL(url);
+                    
+                    document.getElementById('dbResult').innerHTML = '<div class="success">✅ 数据库已导出</div>';
+                } else {
+                    document.getElementById('dbResult').innerHTML = '<div class="error">❌ 数据库未定义</div>';
+                }
+            } catch (error) {
+                document.getElementById('dbResult').innerHTML = `<div class="error">❌ 导出失败: ${error.message}</div>`;
+            }
+        }
+
+        function showErrorLog() {
+            const result = document.getElementById('errorLogResult');
+            if (errorLog.length === 0) {
+                result.innerHTML = '<div class="info">ℹ️ 暂无错误日志</div>';
+                return;
+            }
+            
+            let html = '<div class="info">📝 错误日志 (共' + errorLog.length + '条):</div>';
+            errorLog.forEach((entry, index) => {
+                const logClass = entry.message.includes('Error') ? 'log-error' : 'log-warning';
+                html += `
+                    <div class="log-entry ${logClass}">
+                        <strong>${entry.timestamp}</strong><br>
+                        消息: ${entry.message}<br>
+                        文件: ${entry.filename}:${entry.lineno}:${entry.colno}<br>
+                        堆栈: ${entry.stack.substring(0, 200)}...
+                    </div>
+                `;
+            });
+            
+            result.innerHTML = html;
+        }
+
+        function clearErrorLog() {
+            errorLog = [];
+            document.getElementById('errorLogResult').innerHTML = '<div class="info">ℹ️ 错误日志已清除</div>';
+        }
+
+        function exportErrorLog() {
+            try {
+                const dataStr = JSON.stringify(errorLog, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'error-log.json';
+                link.click();
+                URL.revokeObjectURL(url);
+                
+                document.getElementById('errorLogResult').innerHTML = '<div class="success">✅ 错误日志已导出</div>';
+            } catch (error) {
+                document.getElementById('errorLogResult').innerHTML = `<div class="error">❌ 导出失败: ${error.message}</div>`;
+            }
+        }
+
+        function runStressTest() {
+            const result = document.getElementById('stressTestResult');
+            const startTime = performance.now();
+            let operations = 0;
+            
+            // 模拟大量操作
+            const testInterval = setInterval(() => {
+                try {
+                    // 模拟各种操作
+                    if (typeof setMode === 'function') setMode('test');
+                    if (typeof selectChapter === 'function' && typeof poemDatabase !== 'undefined') {
+                        const chapters = Object.keys(poemDatabase);
+                        if (chapters.length > 0) {
+                            selectChapter(chapters[0]);
+                        }
+                    }
+                    
+                    operations++;
+                    
+                    if (operations >= 100) {
+                        clearInterval(testInterval);
+                        const endTime = performance.now();
+                        const duration = endTime - startTime;
+                        
+                        result.innerHTML = `
+                            <div class="success">
+                                ✅ 压力测试完成<br>
+                                执行操作数: ${operations}<br>
+                                总耗时: ${duration.toFixed(2)}ms<br>
+                                平均耗时: ${(duration / operations).toFixed(2)}ms/操作
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    clearInterval(testInterval);
+                    result.innerHTML = `<div class="error">❌ 压力测试失败: ${error.message}</div>`;
+                }
+            }, 10);
+        }
+
+        function testMemoryUsage() {
+            const result = document.getElementById('stressTestResult');
+            try {
+                if (performance.memory) {
+                    const memory = performance.memory;
+                    const usedMB = (memory.usedJSHeapSize / 1024 / 1024).toFixed(2);
+                    const totalMB = (memory.totalJSHeapSize / 1024 / 1024).toFixed(2);
+                    const limitMB = (memory.jsHeapSizeLimit / 1024 / 1024).toFixed(2);
+                    const usagePercent = (memory.usedJSHeapSize / memory.totalJSHeapSize * 100).toFixed(1);
+                    
+                    result.innerHTML = `
+                        <div class="info">
+                            💾 内存使用情况:<br>
+                            已使用: ${usedMB} MB<br>
+                            总分配: ${totalMB} MB<br>
+                            限制: ${limitMB} MB<br>
+                            使用率: ${usagePercent}%
+                        </div>
+                    `;
+                } else {
+                    result.innerHTML = '<div class="warning">⚠️ 无法获取内存信息</div>';
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ 内存测试失败: ${error.message}</div>`;
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('确定要清除所有数据吗？此操作不可恢复！')) {
+                try {
+                    // 清除各种数据
+                    if (typeof localStorage !== 'undefined') {
+                        localStorage.clear();
+                    }
+                    if (typeof sessionStorage !== 'undefined') {
+                        sessionStorage.clear();
+                    }
+                    
+                    // 重置全局变量
+                    if (typeof window.currentMode !== 'undefined') window.currentMode = '';
+                    if (typeof window.currentChapter !== 'undefined') window.currentChapter = '';
+                    if (typeof window.currentPoemIndex !== 'undefined') window.currentPoemIndex = 0;
+                    
+                    // 清除测试数据
+                    performanceData = [];
+                    errorLog = [];
+                    
+                    // 停止性能监控
+                    if (performanceMonitoring) {
+                        stopPerformanceMonitoring();
+                    }
+                    
+                    document.getElementById('stressTestResult').innerHTML = '<div class="success">✅ 所有数据已清除</div>';
+                } catch (error) {
+                    document.getElementById('stressTestResult').innerHTML = `<div class="error">❌ 清除失败: ${error.message}</div>`;
+                }
+            }
+        }
+        
+        // 页面加载完成后自动检查
+        window.onload = function() {
+            setTimeout(() => {
+                checkFiles();
+                checkDependencies();
+                testJavaScript();
+                console.log('调试页面已加载完成');
+            }, 500);
+        };
+    </script>
+</body>
+</html>

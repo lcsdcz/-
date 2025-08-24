@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI功能测试页面</title>
+    <link rel="stylesheet" href="ai-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .test-header p {
+            color: #666;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+        }
+        .test-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .test-btn {
+            padding: 10px 20px;
+            border: 1px solid #667eea;
+            border-radius: 20px;
+            background: white;
+            color: #667eea;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .test-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+            transition: background 0.3s ease;
+        }
+        .back-link:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1><i class="fas fa-robot"></i> AI功能测试页面</h1>
+            <p>测试AI辅助学习功能的各项特性</p>
+        </div>
+
+        <div class="test-section">
+            <h3>🤖 AI聊天功能测试</h3>
+            <div class="ai-chat-container">
+                <div class="ai-chat-messages" id="ai-chat-messages">
+                    <div class="ai-message ai-system">
+                        <div class="ai-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="ai-content">
+                            <p>你好！我是AI语文学习助手。请测试我的功能：</p>
+                            <ul>
+                                <li>输入诗句名称（如"静夜思"）</li>
+                                <li>输入诗人姓名（如"李白"）</li>
+                                <li>输入文学概念（如"论语"）</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ai-input-container">
+                    <div class="ai-input-wrapper">
+                        <input type="text" id="ai-input" placeholder="输入测试内容..." class="ai-input">
+                        <button onclick="sendAIMessage()" class="ai-send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    <div class="ai-quick-actions">
+                        <button class="ai-quick-btn" onclick="askAI('李白')">李白</button>
+                        <button class="ai-quick-btn" onclick="askAI('静夜思')">静夜思</button>
+                        <button class="ai-quick-btn" onclick="askAI('论语')">论语</button>
+                        <button class="ai-quick-btn" onclick="askAI('苏轼')">苏轼</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 功能测试</h3>
+            <div class="test-buttons">
+                <button class="test-btn" onclick="testAPI()">测试API连接</button>
+                <button class="test-btn" onclick="testPreset()">测试预设回复</button>
+                <button class="test-btn" onclick="testUI()">测试界面响应</button>
+                <button class="test-btn" onclick="clearChat()">清空聊天</button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 测试结果</h3>
+            <div id="test-results">
+                <p>点击上方按钮开始测试...</p>
+            </div>
+        </div>
+
+        <a href="index.html" class="back-link">
+            <i class="fas fa-arrow-left"></i> 返回主页面
+        </a>
+    </div>
+
+    <script src="ai-script.js"></script>
+    <script>
+        // 测试函数
+        function testAPI() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<p>正在测试API连接...</p>';
+            
+            askAI('测试').then(() => {
+                results.innerHTML = '<p style="color: green;">✅ API连接测试完成</p>';
+            }).catch(error => {
+                results.innerHTML = `<p style="color: red;">❌ API连接失败: ${error.message}</p>`;
+            });
+        }
+
+        function testPreset() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<p>正在测试预设回复...</p>';
+            
+            const response = aiAssistant.getPresetResponse('李白');
+            if (response && response.length > 0) {
+                results.innerHTML = '<p style="color: green;">✅ 预设回复功能正常</p>';
+            } else {
+                results.innerHTML = '<p style="color: red;">❌ 预设回复功能异常</p>';
+            }
+        }
+
+        function testUI() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<p>正在测试界面响应...</p>';
+            
+            // 测试输入框
+            const input = document.getElementById('ai-input');
+            if (input) {
+                input.value = '测试输入';
+                results.innerHTML = '<p style="color: green;">✅ 界面响应测试完成</p>';
+            } else {
+                results.innerHTML = '<p style="color: red;">❌ 界面元素未找到</p>';
+            }
+        }
+
+        function clearChat() {
+            const chatMessages = document.getElementById('ai-chat-messages');
+            chatMessages.innerHTML = `
+                <div class="ai-message ai-system">
+                    <div class="ai-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="ai-content">
+                        <p>聊天记录已清空，请重新开始测试。</p>
+                    </div>
+                </div>
+            `;
+            
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<p style="color: blue;">💬 聊天记录已清空</p>';
+        }
+
+        // 键盘事件监听
+        document.addEventListener('DOMContentLoaded', function() {
+            const aiInput = document.getElementById('ai-input');
+            if (aiInput) {
+                aiInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        sendAIMessage();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

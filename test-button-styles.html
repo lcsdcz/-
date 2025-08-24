@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>按钮样式测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        .result {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .success {
+            background: #e6ffe6;
+            color: #388e3c;
+        }
+        .info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        /* 测试按钮样式 */
+        .show-answer-btn {
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+            padding: 2px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: normal;
+            transition: all 0.2s ease;
+            margin-left: 8px;
+            min-width: 50px;
+            height: 20px;
+            line-height: 1;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .show-answer-btn:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        .show-answer-btn.active {
+            background: #e9ecef;
+            border-color: #6c757d;
+            color: #495057;
+        }
+        
+        .show-answer-btn.active:hover {
+            background: #dee2e6;
+            border-color: #6c757d;
+        }
+        
+        /* 理解性默写按钮样式 */
+        .comprehensive-btn {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .comprehensive-btn:hover {
+            background: linear-gradient(135deg, #0056b3, #004085);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+        }
+        
+        .button-demo {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>按钮样式修改测试</h1>
+        
+        <div class="test-section">
+            <h3>1. "显示答案"按钮文字居中</h3>
+            <div class="result success">
+                ✓ 已为所有 show-answer-btn 样式添加了居中属性<br>
+                ✓ 添加了 text-align: center<br>
+                ✓ 添加了 display: flex<br>
+                ✓ 添加了 align-items: center<br>
+                ✓ 添加了 justify-content: center
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>2. 重新打乱提示信息</h3>
+            <div class="result success">
+                ✓ 已删除重新打乱后的提示信息<br>
+                ✓ 不再显示"✅ 题目顺序已重新打乱！"<br>
+                ✓ 功能保持正常，只是不再显示提示
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>3. 按钮样式演示</h3>
+            <div class="button-demo">
+                <h4>普通显示答案按钮（小按钮）</h4>
+                <button class="show-answer-btn">显示答案</button>
+                <button class="show-answer-btn">隐藏答案</button>
+                <button class="show-answer-btn">查看</button>
+                
+                <h4>理解性默写按钮（大按钮）</h4>
+                <button class="comprehensive-btn">显示答案</button>
+                <button class="comprehensive-btn">隐藏答案</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>4. 修改的样式位置</h3>
+            <div class="result info">
+                1. styles.css 第404行：普通显示答案按钮样式<br>
+                2. styles.css 第647行：响应式媒体查询中的按钮样式<br>
+                3. styles.css 第1461行：理解性默写按钮样式<br>
+                4. script.js：删除了 reshuffleQuestions 函数中的提示信息
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>5. 测试建议</h3>
+            <div class="result info">
+                1. 打开主页面 index.html<br>
+                2. 选择任意古诗文进行练习<br>
+                3. 验证"显示答案"按钮文字是否居中<br>
+                4. 选择多篇古诗文进行多篇练习<br>
+                5. 点击"🔀 重新打乱"按钮<br>
+                6. 验证是否不再显示提示信息
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高考部分测试</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>高考部分测试</h1>
+            <p>测试古诗文精选功能</p>
+        </header>
+
+        <div class="chapter-selection" id="chapterSelection">
+            <h2>请选择学习章节</h2>
+            <div class="chapters">
+                <div class="chapter-card" onclick="selectChapter('古诗文精选')">
+                    <h3>高考部分</h3>
+                    <p>高考必背古诗文精选</p>
+                    <span class="poem-count">20篇诗文</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="poem-selection" id="poemSelection" style="display: none;">
+            <h2 id="currentChapter">诗文选择</h2>
+            <div class="poem-list" id="poemList">
+                <!-- 诗文列表将通过JavaScript动态生成 -->
+            </div>
+            <button class="back-btn" onclick="backToChapter()">返回章节选择</button>
+        </div>
+
+        <div class="recitation-page" id="recitationPage" style="display: none;">
+            <h2 id="poemTitle">默写练习</h2>
+            <div class="poem-content">
+                <div class="poem-text" id="poemText">
+                    <!-- 诗文内容将通过JavaScript动态生成 -->
+                </div>
+            </div>
+            <div class="recitation-area">
+                <h3>请默写以下内容：</h3>
+                <div class="blank-text" id="blankText">
+                    <!-- 带空白的诗文将通过JavaScript动态生成 -->
+                </div>
+                <div class="input-area">
+                    <textarea id="studentAnswer" placeholder="请在此输入你的默写内容..."></textarea>
+                    <div class="action-buttons">
+                        <button class="submit-btn" onclick="submitAnswer()">提交答案</button>
+                        <button class="show-answer-btn" onclick="showAnswer()" style="display: none;">显示原文</button>
+                        <button class="next-btn" onclick="nextPoem()" style="display: none;">下一篇</button>
+                    </div>
+                </div>
+            </div>
+            <button class="back-btn" onclick="backToPoem()">返回诗文选择</button>
+        </div>
+    </div>
+
+    <script src="poems-data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

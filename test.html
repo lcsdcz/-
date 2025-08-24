@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试页面 - 古诗文默写系统</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>高中语文早读助手</h1>
+            <p>古诗文背诵默写系统 - 测试页面</p>
+        </header>
+
+        <!-- 模式选择页面 -->
+        <div class="mode-selection" id="mode-selection">
+            <h2>选择学习模式</h2>
+            <div class="mode-cards">
+                <div class="mode-card" onclick="setMode('recitation')">
+                    <h3>默写模式</h3>
+                    <p>适合自我检测和练习</p>
+                    <span class="mode-icon">✍️</span>
+                </div>
+                <div class="mode-card" onclick="setMode('memorization')">
+                    <h3>背诵模式</h3>
+                    <p>适合复习巩固和记忆</p>
+                    <span class="mode-icon">📚</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 章节选择页面 -->
+        <div class="chapter-selection" id="chapterSelection" style="display: none;">
+            <h2>选择学习章节</h2>
+            <div class="chapter-cards">
+                <div class="chapter-card" onclick="selectChapter('必修一')">
+                    <h3>必修一</h3>
+                    <p>诗经、楚辞等先秦文学</p>
+                    <span class="chapter-icon">📖</span>
+                </div>
+                <div class="chapter-card" onclick="selectChapter('必修二')">
+                    <h3>必修二</h3>
+                    <p>唐诗等古典诗词</p>
+                    <span class="chapter-icon">🌸</span>
+                </div>
+                <div class="chapter-card" onclick="selectChapter('必修三')">
+                    <h3>必修三</h3>
+                    <p>宋词等古典诗词</p>
+                    <span class="chapter-icon">🍁</span>
+                </div>
+                <div class="chapter-card" onclick="selectChapter('论语必背')">
+                    <h3>论语必背</h3>
+                    <p>经典名句、人生哲理</p>
+                    <span class="chapter-icon">🏛️</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 诗文选择页面 -->
+        <div class="poem-selection" id="poemSelection" style="display: none;">
+            <h2>选择诗文 - <span id="currentChapter">必修一</span></h2>
+            <div class="poem-list" id="poemList">
+                <!-- 诗文列表将通过JavaScript动态生成 -->
+            </div>
+        </div>
+
+        <!-- 默写页面 -->
+        <div class="recitation-page" id="recitationPage" style="display: none;">
+            <h2 id="poemTitle">关雎 - 默写练习</h2>
+            <div class="poem-content">
+                <div class="poem-text" id="poemText">
+                    <!-- 诗文内容将通过JavaScript动态生成 -->
+                </div>
+            </div>
+            <div class="recitation-area">
+                <h3>请默写以下内容：</h3>
+                <div class="blank-text" id="blankText">
+                    <!-- 带空白的诗文将通过JavaScript动态生成 -->
+                </div>
+                <div class="input-area">
+                    <textarea id="studentAnswer" placeholder="请在此输入你的默写内容...&#10;&#10;填前句/填后句模式：请按题目顺序输入答案，用逗号分隔&#10;例如：关关雎鸠,窈窕淑女,参差荇菜&#10;&#10;自动模式：请直接输入连续的字符"></textarea>
+                    <div class="action-buttons">
+                        <button class="submit-btn" onclick="submitAnswer()">提交答案</button>
+                        <button class="show-answer-btn" onclick="showAnswer()" style="display: none;">显示原文</button>
+                        <button class="next-btn" onclick="nextPoem()" style="display: none;">下一篇</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="poems-data.js"></script>
+    <script>
+        // 全局变量
+        let currentMode = '';
+        let currentChapter = '';
+        let currentPoemIndex = 0;
+        let poems = [];
+        let currentExerciseType = 'auto';
+        let currentExerciseIndex = 0;
+        let currentExerciseConfig = null;
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('测试页面已加载完成！');
+            console.log('数据库包含章节：', Object.keys(window.poemDatabase || {}));
+        });
+
+        // 设置学习模式
+        function setMode(mode) {
+            console.log('设置模式：', mode);
+            currentMode = mode;
+            document.getElementById('mode-selection').style.display = 'none';
+            document.getElementById('chapterSelection').style.display = 'block';
+        }
+
+        // 选择章节
+        function selectChapter(chapter) {
+            console.log('选择章节：', chapter);
+            currentChapter = chapter;
+            
+            // 优先使用外部数据
+            if (typeof window.poemDatabase !== 'undefined' && window.poemDatabase[chapter]) {
+                poems = window.poemDatabase[chapter];
+            } else {
+                // 使用测试数据
+                poems = getTestPoems(chapter);
+            }
+            
+            document.getElementById('chapterSelection').style.display = 'none';
+            document.getElementById('poemSelection').style.display = 'block';
+            document.getElementById('currentChapter').textContent = chapter;
+            displayPoemList();
+        }
+
+        // 获取测试数据
+        function getTestPoems(chapter) {
+            const testData = {
+                '必修一': [
+                    {
+                        title: '关雎',
+                        author: '《诗经》',
+                        content: '关关雎鸠，在河之洲。窈窕淑女，君子好逑。参差荇菜，左右流之。窈窕淑女，寤寐求之。求之不得，寤寐思服。悠哉悠哉，辗转反侧。参差荇菜，左右采之。窈窕淑女，琴瑟友之。参差荇菜，左右芼之。窈窕淑女，钟鼓乐之。',
+                        exercises: [
+                            {
+                                type: 'fillBack',
+                                title: '经典名句填空',
+                                description: '请根据前半句内容，填写后半句',
+                                items: [
+                                    { front: '关关雎鸠', back: '在河之洲', hint: '鸟儿在哪里？' },
+                                    { front: '窈窕淑女', back: '君子好逑', hint: '什么样的女子？' },
+                                    { front: '参差荇菜', back: '左右流之', hint: '水草如何？' },
+                                    { front: '窈窕淑女', back: '寤寐求之', hint: '日夜思念' }
+                                ]
+                            },
+                            {
+                                type: 'auto',
+                                title: '重点字词默写',
+                                description: '请填写下划线处的字词',
+                                blanks: [3, 7, 11, 15, 19, 23, 27, 31, 35, 39],
+                                hints: ['鸟叫声', '女子', '水草', '思念', '辗转', '采摘', '乐器', '选择', '乐器', '欢乐']
+                            }
+                        ]
+                    },
+                    {
+                        title: '蒹葭',
+                        author: '《诗经》',
+                        content: '蒹葭苍苍，白露为霜。所谓伊人，在水一方。溯洄从之，道阻且长。溯游从之，宛在水中央。蒹葭萋萋，白露未晞。所谓伊人，在水之湄。溯洄从之，道阻且跻。溯游从之，宛在水中坻。蒹葭采采，白露未已。所谓伊人，在水之涘。溯洄从之，道阻且右。溯游从之，宛在水中沚。',
+                        exercises: [
+                            {
+                                type: 'fillBack',
+                                title: '意境理解填空',
+                                description: '请根据前半句内容，填写后半句',
+                                items: [
+                                    { front: '蒹葭苍苍', back: '白露为霜', hint: '秋天的景象' },
+                                    { front: '所谓伊人', back: '在水一方', hint: '思念的人在哪里？' },
+                                    { front: '溯洄从之', back: '道阻且长', hint: '逆流而上' }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                '必修二': [
+                    {
+                        title: '静夜思',
+                        author: '李白',
+                        content: '床前明月光，疑是地上霜。举头望明月，低头思故乡。',
+                        exercises: [
+                            {
+                                type: 'fillBack',
+                                title: '思乡情怀填空',
+                                description: '请根据前半句内容，填写后半句',
+                                items: [
+                                    { front: '床前明月光', back: '疑是地上霜', hint: '月光像什么？' },
+                                    { front: '举头望明月', back: '低头思故乡', hint: '抬头看什么？' }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                '必修三': [
+                    {
+                        title: '蜀相',
+                        author: '杜甫',
+                        content: '丞相祠堂何处寻，锦官城外柏森森。映阶碧草自春色，隔叶黄鹂空好音。三顾频烦天下计，两朝开济老臣心。出师未捷身先死，长使英雄泪满襟。',
+                        exercises: [
+                            {
+                                type: 'fillBack',
+                                title: '历史人物填空',
+                                description: '请根据前半句内容，填写后半句',
+                                items: [
+                                    { front: '丞相祠堂何处寻', back: '锦官城外柏森森', hint: '祠堂在哪里？' },
+                                    { front: '三顾频烦天下计', back: '两朝开济老臣心', hint: '谁三顾茅庐？' }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                '论语必背': [
+                    {
+                        title: '学而时习之',
+                        author: '《论语》',
+                        content: '学而时习之，不亦说乎？有朋自远方来，不亦乐乎？人不知而不愠，不亦君子乎？',
+                        exercises: [
+                            {
+                                type: 'fillBack',
+                                title: '学习态度填空',
+                                description: '请根据前半句内容，填写后半句',
+                                items: [
+                                    { front: '学而时习之', back: '不亦说乎', hint: '学习后怎么样？' },
+                                    { front: '有朋自远方来', back: '不亦乐乎', hint: '朋友来了怎么样？' },
+                                    { front: '人不知而不愠', back: '不亦君子乎', hint: '不生气怎么样？' }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            };
+            
+            return testData[chapter] || [];
+        }
+
+        // 显示诗文列表
+        function displayPoemList() {
+            const poemList = document.getElementById('poemList');
+            poemList.innerHTML = '';
+            
+            poems.forEach((poem, index) => {
+                const poemItem = document.createElement('div');
+                poemItem.className = 'poem-item';
+                poemItem.onclick = () => selectPoem(index);
+                
+                // 显示练习类型数量
+                const exerciseCount = poem.exercises ? poem.exercises.length : 0;
+                const exerciseText = exerciseCount > 0 ? `(${exerciseCount}种练习方式)` : '';
+                
+                poemItem.innerHTML = `
+                    <h4>${poem.title}</h4>
+                    <p>作者：${poem.author}</p>
+                    <p>${poem.content.substring(0, 50)}...</p>
+                    <p class="exercise-count">${exerciseText}</p>
+                `;
+                
+                poemList.appendChild(poemItem);
+            });
+        }
+
+        // 选择诗文
+        function selectPoem(index) {
+            currentPoemIndex = index;
+            const poem = poems[index];
+            
+            document.getElementById('poemSelection').style.display = 'none';
+            document.getElementById('recitationPage').style.display = 'block';
+            document.getElementById('poemTitle').textContent = poem.title;
+            
+            displayPoem(poem);
+        }
+
+        // 显示诗文内容
+        function displayPoem(poem) {
+            const poemText = document.getElementById('poemText');
+            const blankText = document.getElementById('blankText');
+            
+            // 默写时不显示完整诗文
+            poemText.style.display = 'none';
+            
+            // 创建练习选择器
+            createExerciseSelector(poem);
+            
+            // 清空学生答案
+            document.getElementById('studentAnswer').value = '';
+            
+            // 重置按钮状态
+            document.querySelector('.submit-btn').style.display = 'inline-block';
+            document.querySelector('.show-answer-btn').style.display = 'none';
+            document.querySelector('.next-btn').style.display = 'none';
+            
+            // 清除之前的答案显示
+            const answerComparison = document.querySelector('.answer-comparison');
+            const correctAnswer = document.querySelector('.correct-answer');
+            if (answerComparison) answerComparison.remove();
+            if (correctAnswer) correctAnswer.remove();
+        }
+
+        // 创建练习选择器
+        function createExerciseSelector(poem) {
+            const blankText = document.getElementById('blankText');
+            
+            // 清除之前的选择器
+            const existingSelector = document.querySelector('.exercise-selector');
+            if (existingSelector) existingSelector.remove();
+            
+            blankText.innerHTML = '';
+            
+            if (!poem.exercises || poem.exercises.length === 0) {
+                // 如果没有自定义练习，使用默认模式
+                createDefaultExercise(poem);
+                return;
+            }
+            
+            // 创建练习选择器
+            const exerciseSelector = document.createElement('div');
+            exerciseSelector.className = 'exercise-selector';
+            
+            let selectorHTML = '<h4>选择练习方式：</h4><div class="exercise-options">';
+            
+            poem.exercises.forEach((exercise, index) => {
+                selectorHTML += `
+                    <div class="exercise-option" onclick="selectExercise(${index})">
+                        <h5>${exercise.title}</h5>
+                        <p>${exercise.description}</p>
+                        <span class="exercise-type-badge">${getExerciseTypeName(exercise.type)}</span>
+                    </div>
+                `;
+            });
+            
+            selectorHTML += '</div>';
+            exerciseSelector.innerHTML = selectorHTML;
+            
+            blankText.appendChild(exerciseSelector);
+        }
+
+        // 选择练习
+        function selectExercise(exerciseIndex) {
+            const poem = poems[currentPoemIndex];
+            currentExerciseConfig = poem.exercises[exerciseIndex];
+            
+            // 清除选择器
+            const selector = document.querySelector('.exercise-selector');
+            if (selector) selector.remove();
+            
+            // 生成练习内容
+            generateCustomExercise();
+        }
+
+        // 生成自定义练习
+        function generateCustomExercise() {
+            const blankText = document.getElementById('blankText');
+            const exercise = currentExerciseConfig;
+            
+            console.log('生成自定义练习：', exercise);
+            
+            // 清除之前的练习内容
+            const existingExercise = document.querySelector('.exercise-content');
+            if (existingExercise) existingExercise.remove();
+            
+            // 创建练习内容
+            const exerciseContent = document.createElement('div');
+            exerciseContent.className = 'exercise-content';
+            
+            let exerciseText = '';
+            let allExercises = [];
+            
+            if (exercise.type === 'auto') {
+                // 自动模式：使用预定义的空白位置
+                const words = poems[currentPoemIndex].content.split('');
+                exerciseText = words.map((char, index) => {
+                    if (exercise.blanks.includes(index)) {
+                        return '<span class="blank">_____</span>';
+                    }
+                    return char;
+                }).join('');
+                
+                // 收集所有答案
+                allExercises = exercise.blanks.map(index => words[index]);
+                
+            } else if (exercise.type === 'fillFront' || exercise.type === 'fillBack') {
+                // 填前句/填后句模式：使用预定义的练习项目
+                exerciseText = exercise.items.map((item, index) => {
+                    if (exercise.type === 'fillFront') {
+                        allExercises.push(item.front);
+                        return `<div class="exercise-item">
+                            <span class="exercise-number">${index + 1}.</span>
+                            <span class="blank">_____</span>${item.back}
+                            ${item.hint ? `<span class="hint">💡 ${item.hint}</span>` : ''}
+                        </div>`;
+                    } else {
+                        allExercises.push(item.back);
+                        return `<div class="exercise-item">
+                            <span class="exercise-number">${index + 1}.</span>
+                            ${item.front}<span class="blank">_____</span>
+                            ${item.hint ? `<span class="hint">💡 ${item.hint}</span>` : ''}
+                        </div>`;
+                    }
+                }).join('');
+                
+                // 将练习项目按两行一组进行分组
+                const exerciseItems = exerciseText.match(/<div class="exercise-item">.*?<\/div>/g) || [];
+                const groupedItems = [];
+                
+                for (let i = 0; i < exerciseItems.length; i += 2) {
+                    const item1 = exerciseItems[i];
+                    const item2 = exerciseItems[i + 1];
+                    
+                    let rowHtml = '<div class="exercise-row">';
+                    
+                    if (item1) {
+                        rowHtml += `<div style="flex: 1; margin-right: 10px;">${item1}</div>`;
+                    }
+                    
+                    if (item2) {
+                        rowHtml += `<div style="flex: 1; margin-left: 10px;">${item2}</div>`;
+                    }
+                    
+                    rowHtml += '</div>';
+                    groupedItems.push(rowHtml);
+                }
+                
+                exerciseText = groupedItems.join('');
+            }
+            
+            exerciseContent.innerHTML = `
+                <div class="exercise-instruction">
+                    <h4>练习要求：</h4>
+                    <p>${exercise.description}</p>
+                </div>
+                <div class="exercise-text">
+                    ${exerciseText}
+                </div>
+                <div class="exercise-info">
+                    <p>总共 ${allExercises.length} 道题目，请在下方输入框中按顺序填写所有答案，用逗号分隔</p>
+                </div>
+            `;
+            
+            blankText.appendChild(exerciseContent);
+            
+            // 存储所有答案供提交时使用
+            window.allExerciseAnswers = allExercises;
+        }
+
+        // 创建默认练习（兼容旧版本）
+        function createDefaultExercise(poem) {
+            const blankText = document.getElementById('blankText');
+            
+            // 添加练习类型选择
+            const exerciseTypeSelector = document.createElement('div');
+            exerciseTypeSelector.className = 'exercise-type-selector';
+            exerciseTypeSelector.innerHTML = `
+                <h4>选择练习类型：</h4>
+                <div class="exercise-buttons">
+                    <button class="exercise-btn" onclick="setExerciseType('auto')">自动模式</button>
+                    <button class="exercise-btn" onclick="setExerciseType('fillFront')">填前句</button>
+                    <button class="exercise-btn" onclick="setExerciseType('fillBack')">填后句</button>
+                </div>
+            `;
+            
+            blankText.appendChild(exerciseTypeSelector);
+            
+            // 默认显示自动模式
+            setExerciseType('auto');
+        }
+
+        // 获取练习类型名称
+        function getExerciseTypeName(type) {
+            const typeNames = {
+                'auto': '自动模式',
+                'fillFront': '填前句',
+                'fillBack': '填后句'
+            };
+            return typeNames[type] || type;
+        }
+
+        // 设置练习类型（兼容旧版本）
+        function setExerciseType(type) {
+            currentExerciseType = type;
+            
+            // 更新按钮样式
+            document.querySelectorAll('.exercise-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 找到对应的按钮并添加active类
+            const targetBtn = document.querySelector(`[onclick="setExerciseType('${type}')"]`);
+            if (targetBtn) {
+                targetBtn.classList.add('active');
+            }
+            
+            // 生成对应的练习内容
+            generateExercise();
+        }
+
+        // 生成练习内容（兼容旧版本）
+        function generateExercise() {
+            const poem = poems[currentPoemIndex];
+            const blankText = document.getElementById('blankText');
+            
+            console.log('生成练习，诗文：', poem.title);
+            console.log('练习类型：', currentExerciseType);
+            console.log('诗文内容：', poem.content);
+            
+            // 获取选择器
+            const selector = document.querySelector('.exercise-type-selector');
+            
+            // 清除之前的练习内容
+            const existingExercise = document.querySelector('.exercise-content');
+            if (existingExercise) existingExercise.remove();
+            
+            // 创建练习内容
+            const exerciseContent = document.createElement('div');
+            exerciseContent.className = 'exercise-content';
+            
+            let exerciseText = '';
+            let allExercises = [];
+            
+            if (currentExerciseType === 'auto') {
+                // 自动模式：随机选择一些字词作为空白
+                const words = poem.content.split('');
+                const blankIndices = poem.blanks || [];
+                
+                exerciseText = words.map((char, index) => {
+                    if (blankIndices.includes(index)) {
+                        return '<span class="blank">_____</span>';
+                    }
+                    return char;
+                }).join('');
+                
+                // 收集所有答案
+                allExercises = blankIndices.map(index => words[index]);
+                
+            } else if (currentExerciseType === 'fillFront') {
+                // 填前句模式：显示后半句，要求填写前半句
+                const sentences = splitByPunctuation(poem.content);
+                console.log('填前句模式，分割后的句子：', sentences);
+                
+                exerciseText = sentences.map((sentence, index) => {
+                    if (!sentence.trim()) return '';
+                    
+                    // 寻找合适的分割点（优先在逗号、顿号等标点处分割）
+                    const splitPoint = findNaturalSplitPoint(sentence);
+                    const frontPart = sentence.substring(0, splitPoint);
+                    const backPart = sentence.substring(splitPoint);
+                    
+                    console.log(`句子${index + 1}: "${sentence}" -> 前半: "${frontPart}", 后半: "${backPart}"`);
+                    
+                    allExercises.push(frontPart);
+                    
+                    return `<div class="exercise-item">
+                        <span class="exercise-number">${index + 1}.</span>
+                        <span class="blank">_____</span>${backPart}
+                    </div>`;
+                }).filter(item => item !== '').join('');
+                
+            } else if (currentExerciseType === 'fillBack') {
+                // 填后句模式：显示前半句，要求填写后半句
+                const sentences = splitByPunctuation(poem.content);
+                console.log('填后句模式，分割后的句子：', sentences);
+                
+                exerciseText = sentences.map((sentence, index) => {
+                    if (!sentence.trim()) return '';
+                    
+                    // 寻找合适的分割点（优先在逗号、顿号等标点处分割）
+                    const splitPoint = findNaturalSplitPoint(sentence);
+                    const frontPart = sentence.substring(0, splitPoint);
+                    const backPart = sentence.substring(splitPoint);
+                    
+                    console.log(`句子${index + 1}: "${sentence}" -> 前半: "${frontPart}", 后半: "${backPart}"`);
+                    
+                    allExercises.push(backPart);
+                    
+                    return `<div class="exercise-item">
+                        <span class="exercise-number">${index + 1}.</span>
+                        ${frontPart}<span class="blank">_____</span>
+                    </div>`;
+                }).filter(item => item !== '').join('');
+            }
+            
+            console.log('生成的练习HTML：', exerciseText);
+            console.log('收集的答案：', allExercises);
+            
+            // 将练习项目按两行一组进行分组，实现"两句话一行"的显示效果
+            if (currentExerciseType !== 'auto') {
+                const exerciseItems = exerciseText.match(/<div class="exercise-item">.*?<\/div>/g) || [];
+                console.log('匹配到的练习项目：', exerciseItems);
+                
+                const groupedItems = [];
+                
+                for (let i = 0; i < exerciseItems.length; i += 2) {
+                    const item1 = exerciseItems[i];
+                    const item2 = exerciseItems[i + 1];
+                    
+                    let rowHtml = '<div class="exercise-row">';
+                    
+                    if (item1) {
+                        rowHtml += `<div style="flex: 1; margin-right: 10px;">${item1}</div>`;
+                    }
+                    
+                    if (item2) {
+                        rowHtml += `<div style="flex: 1; margin-left: 10px;">${item2}</div>`;
+                    }
+                    
+                    rowHtml += '</div>';
+                    groupedItems.push(rowHtml);
+                }
+                
+                exerciseText = groupedItems.join('');
+                console.log('分组后的HTML：', exerciseText);
+            }
+            
+            exerciseContent.innerHTML = `
+                <div class="exercise-instruction">
+                    <h4>练习要求：</h4>
+                    <p>${getExerciseInstruction()}</p>
+                </div>
+                <div class="exercise-text">
+                    ${currentExerciseType === 'auto' ? exerciseText : exerciseText}
+                </div>
+                <div class="exercise-info">
+                    <p>总共 ${allExercises.length} 道题目，请在下方输入框中按顺序填写所有答案，用逗号分隔</p>
+                </div>
+            `;
+            
+            blankText.appendChild(exerciseContent);
+            
+            // 存储所有答案供提交时使用
+            window.allExerciseAnswers = allExercises;
+        }
+
+        // 获取练习说明
+        function getExerciseInstruction() {
+            switch (currentExerciseType) {
+                case 'auto':
+                    return '请填写下划线处的字词';
+                case 'fillFront':
+                    return '请根据后半句内容，填写前半句';
+                case 'fillBack':
+                    return '请根据前半句内容，填写后半句';
+                default:
+                    return '请完成练习';
+            }
+        }
+
+        // 提交答案
+        function submitAnswer() {
+            const studentAnswer = document.getElementById('studentAnswer').value.trim();
+            if (!studentAnswer) {
+                alert('请输入你的默写内容！');
+                return;
+            }
+            
+            const poem = poems[currentPoemIndex];
+            const allAnswers = window.allExerciseAnswers || [];
+            
+            if (allAnswers.length === 0) {
+                alert('没有找到练习题目！');
+                return;
+            }
+            
+            // 解析学生答案（按逗号分隔）
+            let studentAnswers = [];
+            if (currentExerciseType === 'auto') {
+                // 自动模式：学生可能输入连续的字符
+                studentAnswers = studentAnswer.split('');
+            } else {
+                // 填前句/填后句模式：按逗号分隔
+                studentAnswers = studentAnswer.split('，').map(s => s.trim()).filter(s => s);
+            }
+            
+            // 确保答案数量匹配
+            if (studentAnswers.length !== allAnswers.length) {
+                alert(`请输入 ${allAnswers.length} 个答案，当前输入了 ${studentAnswers.length} 个`);
+                return;
+            }
+            
+            // 创建详细的答案对比
+            const answerComparison = document.createElement('div');
+            answerComparison.className = 'answer-comparison';
+            
+            let comparisonHTML = '<h4>答案对比</h4>';
+            
+            // 为每个题目创建对比行
+            for (let i = 0; i < allAnswers.length; i++) {
+                const isCorrect = studentAnswers[i] === allAnswers[i];
+                const statusIcon = isCorrect ? '✅' : '❌';
+                const statusClass = isCorrect ? 'correct' : 'incorrect';
+                
+                comparisonHTML += `
+                    <div class="answer-row ${statusClass}">
+                        <span class="answer-label">第${i + 1}题：</span>
+                        <div class="answer-content">
+                            <span class="student-answer">你的答案：${studentAnswers[i] || '未填写'}</span>
+                            <span class="correct-answer">正确答案：${allAnswers[i]}</span>
+                            <span class="status-icon">${statusIcon}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 计算正确率
+            const correctCount = studentAnswers.filter((answer, index) => answer === allAnswers[index]).length;
+            const accuracy = Math.round((correctCount / allAnswers.length) * 100);
+            
+            comparisonHTML += `
+                <div class="answer-summary">
+                    <h5>练习总结</h5>
+                    <p>正确：${correctCount} 题，错误：${allAnswers.length - correctCount} 题</p>
+                    <p>正确率：${accuracy}%</p>
+                    <p class="feedback">${accuracy >= 80 ? '🎉 优秀！继续保持！' : accuracy >= 60 ? '👍 不错！继续努力！' : '💪 加油！多练习几次！'}</p>
+                </div>
+            `;
+            
+            answerComparison.innerHTML = comparisonHTML;
+            
+            // 插入到输入区域后面
+            const inputArea = document.querySelector('.input-area');
+            inputArea.parentNode.insertBefore(answerComparison, inputArea.nextSibling);
+            
+            // 更新按钮状态
+            document.querySelector('.submit-btn').style.display = 'none';
+            document.querySelector('.show-answer-btn').style.display = 'inline-block';
+            document.querySelector('.next-btn').style.display = 'inline-block';
+        }
+
+        // 显示答案
+        function showAnswer() {
+            const poem = poems[currentPoemIndex];
+            const correctAnswer = document.createElement('div');
+            correctAnswer.className = 'correct-answer';
+            correctAnswer.innerHTML = `
+                <h4>完整诗文</h4>
+                <p>${poem.content}</p>
+            `;
+            
+            // 插入到答案对比后面
+            const answerComparison = document.querySelector('.answer-comparison');
+            if (answerComparison) {
+                answerComparison.parentNode.insertBefore(correctAnswer, answerComparison.nextSibling);
+            }
+        }
+
+        // 下一篇诗文
+        function nextPoem() {
+            if (currentPoemIndex < poems.length - 1) {
+                currentPoemIndex++;
+                const poem = poems[currentPoemIndex];
+                
+                // 清除之前的答案显示
+                const answerComparison = document.querySelector('.answer-comparison');
+                const correctAnswer = document.querySelector('.correct-answer');
+                if (answerComparison) answerComparison.remove();
+                if (correctAnswer) correctAnswer.remove();
+                
+                displayPoem(poem);
+            } else {
+                alert('已经是最后一篇诗文了！');
+            }
+        }
+
+        // 智能分割句子，优先在标点符号处分割
+        function splitByPunctuation(text) {
+            console.log('开始分割文本：', text);
+            
+            // 如果文本没有句号，直接按逗号分割
+            if (!text.includes('。')) {
+                console.log('文本没有句号，直接按逗号分割');
+                const parts = text.split(/[，、]/).filter(part => part.trim());
+                console.log('按逗号分割结果：', parts);
+                return parts;
+            }
+            
+            // 按句号分割，但保留标点符号
+            const sentences = text.split('。').filter(s => s.trim());
+            console.log('按句号分割结果：', sentences);
+            
+            // 进一步处理每个句子，在逗号、顿号等标点处分割
+            const result = [];
+            sentences.forEach((sentence, index) => {
+                if (!sentence.trim()) return;
+                
+                if (sentence.includes('，') || sentence.includes('、')) {
+                    // 如果句子包含逗号或顿号，按这些标点分割
+                    const parts = sentence.split(/[，、]/);
+                    parts.forEach(part => {
+                        if (part.trim()) {
+                            result.push(part.trim());
+                        }
+                    });
+                } else {
+                    result.push(sentence.trim());
+                }
+            });
+            
+            console.log('最终分割结果：', result);
+            return result;
+        }
+
+        // 寻找自然的分割点
+        function findNaturalSplitPoint(sentence) {
+            // 优先在逗号、顿号处分割
+            const commaIndex = sentence.indexOf('，');
+            const pauseIndex = sentence.indexOf('、');
+            
+            if (commaIndex !== -1) {
+                return commaIndex + 1; // 包含逗号
+            } else if (pauseIndex !== -1) {
+                return pauseIndex + 1; // 包含顿号
+            } else {
+                // 如果没有标点，则在句子中间分割
+                return Math.floor(sentence.length / 2);
+            }
+        }
+    </script>
+</body>
+</html>

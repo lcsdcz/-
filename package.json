@@ -1,0 +1,11 @@
+{
+  "name": "ai-chinese-learning-assistant",
+  "version": "1.0.0",
+  "description": "AI-powered Chinese learning platform",
+  "main": "index.html",
+  "scripts": {
+    "start": "echo 'Static site, no build required'"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

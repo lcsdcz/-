@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>功能修改测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        .result {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .success {
+            background: #e6ffe6;
+            color: #388e3c;
+        }
+        .info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .code-block {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>功能修改测试</h1>
+        
+        <div class="test-section">
+            <h3>1. 上下文默写修改</h3>
+            <div class="result success">
+                ✓ 已删除"随机练习"选项<br>
+                ✓ 只保留"整篇填后句"和"整篇填前句"两个选项<br>
+                ✓ 修改了按钮文本，从"填后句练习"改为"整篇填后句"<br>
+                ✓ 修改了按钮文本，从"填前句练习"改为"整篇填前句"
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>2. 多篇练习随机出题乱序功能</h3>
+            <div class="result success">
+                ✓ 已在多篇练习中添加"🔀 重新打乱"按钮<br>
+                ✓ 按钮仅在多篇练习（multiComplete 和 multiRandom）中显示<br>
+                ✓ 点击按钮后会重新打乱题目顺序<br>
+                ✓ 会显示"✅ 题目顺序已重新打乱！"的提示信息<br>
+                ✓ 提示信息3秒后自动消失
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>3. 理解性默写内容</h3>
+            <div class="result info">
+                ✓ 未改动理解性默写的内容<br>
+                ✓ 理解性默写功能保持完整
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>4. 修改的代码位置</h3>
+            <div class="code-block">// 修改了 createSentenceBasedExercise 函数
+// 删除了随机练习选项，只保留整篇填前句和后句
+
+// 修改了 startSentenceExercise 函数  
+// 删除了随机练习的逻辑
+
+// 修改了 displayMultiExercise 函数
+// 添加了重新打乱按钮
+
+// 新增了 reshuffleQuestions 函数
+// 实现重新打乱功能</div>
+        </div>
+        
+        <div class="test-section">
+            <h3>5. 测试建议</h3>
+            <div class="result info">
+                1. 打开主页面 index.html<br>
+                2. 选择"古诗文精选"章节<br>
+                3. 选择任意一篇古诗文<br>
+                4. 验证只显示"整篇填后句"和"整篇填前句"两个选项<br>
+                5. 选择多篇古诗文进行多篇练习<br>
+                6. 验证是否显示"🔀 重新打乱"按钮<br>
+                7. 点击重新打乱按钮，验证功能是否正常
+            </div>
+        </div>
+    </div>
+</body>
+</html>

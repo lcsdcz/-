@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>理解性默写字体调整测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        .result {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .success {
+            background: #e6ffe6;
+            color: #388e3c;
+        }
+        .info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        /* 模拟理解性默写的样式 */
+        .comprehensive-question {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .question-header h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .question-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .show-answer-btn {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .show-answer-btn:hover {
+            background: linear-gradient(135deg, #0056b3, #004085);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+        }
+        
+        .answer-text {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #c3e6cb;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        .font-size-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .font-size-controls label {
+            font-weight: 500;
+            color: #333;
+            min-width: 60px;
+            font-size: 0.8rem;
+        }
+        
+        .font-size-controls input[type="range"] {
+            width: 80px;
+            height: 4px;
+            border-radius: 2px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .font-size-controls input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+        }
+        
+        .font-size-controls input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>理解性默写字体调整功能测试</h1>
+        
+        <div class="test-section">
+            <h3>1. 字体调整功能</h3>
+            <div class="result success">
+                ✓ 已在理解性默写中添加字体大小调整控件<br>
+                ✓ 支持题目字体和答案字体的独立调整<br>
+                ✓ 字体大小范围：12px - 24px<br>
+                ✓ 实时预览字体大小变化
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>2. 字体调整控件演示</h3>
+            <div class="font-size-controls">
+                <label>题目字体：</label>
+                <input type="range" id="questionFontSize" min="12" max="24" value="16" onchange="adjustFontSize('question', this.value)">
+                <span id="questionFontSizeValue">16px</span>
+                <label>答案字体：</label>
+                <input type="range" id="answerFontSize" min="12" max="24" value="16" onchange="adjustFontSize('answer', this.value)">
+                <span id="answerFontSizeValue">16px</span>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>3. 理解性默写题目演示</h3>
+            <div class="comprehensive-question">
+                <div class="question-header">
+                    <h3>题目 1</h3>
+                    <div class="question-meta">
+                        <span class="source">《论语》十二章</span>
+                        <span class="exam-info">2020 全国I卷</span>
+                    </div>
+                </div>
+                <div class="question-text">在《〈论语〉十二章》中，孔子用反问语气强调人要有仁爱之心，否则遵守礼仪也没什么用的句子是：______</div>
+                <button class="show-answer-btn" onclick="toggleAnswer(this)">显示答案</button>
+                <div class="answer-text" style="display: none;">人而不仁，如礼何？</div>
+            </div>
+            
+            <div class="comprehensive-question">
+                <div class="question-header">
+                    <h3>题目 2</h3>
+                    <div class="question-meta">
+                        <span class="source">《劝学》</span>
+                        <span class="exam-info">2018 全国III卷</span>
+                    </div>
+                </div>
+                <div class="question-text">《荀子·劝学》中举例论证借助外物的重要性时说，终日殚精竭虑思考，却"_______"，踮起脚极目远望，也"_______"。</div>
+                <button class="show-answer-btn" onclick="toggleAnswer(this)">显示答案</button>
+                <div class="answer-text" style="display: none;">不如须臾之所学也，不如登高之博见也</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>4. 修改的代码位置</h3>
+            <div class="result info">
+                1. script.js：修改了 displayComprehensiveQuestions 函数<br>
+                2. script.js：修改了 adjustFontSize 函数<br>
+                3. 添加了理解性默写字体调整控件<br>
+                4. 支持题目和答案字体的独立调整
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>5. 测试建议</h3>
+            <div class="result info">
+                1. 打开主页面 index.html<br>
+                2. 选择"理解性默写"章节<br>
+                3. 选择任意文章或"全部随机"<br>
+                4. 验证标题栏是否显示字体调整控件<br>
+                5. 调整题目字体和答案字体<br>
+                6. 验证字体大小是否实时变化
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 调整字体大小函数
+        function adjustFontSize(type, size) {
+            const sizeValue = size + 'px';
+            
+            if (type === 'question') {
+                // 调整理解性默写的题目字体
+                document.querySelectorAll('.comprehensive-question .question-text').forEach(text => {
+                    text.style.fontSize = sizeValue;
+                });
+                document.getElementById('questionFontSizeValue').textContent = sizeValue;
+            } else if (type === 'answer') {
+                // 调整理解性默写的答案字体
+                document.querySelectorAll('.comprehensive-question .answer-text').forEach(text => {
+                    text.style.fontSize = sizeValue;
+                });
+                document.getElementById('answerFontSizeValue').textContent = sizeValue;
+            }
+        }
+        
+        // 切换答案显示/隐藏
+        function toggleAnswer(button) {
+            const answerText = button.nextElementSibling;
+            if (answerText.style.display === 'none') {
+                answerText.style.display = 'block';
+                button.textContent = '隐藏答案';
+                button.classList.add('active');
+            } else {
+                answerText.style.display = 'none';
+                button.textContent = '显示答案';
+                button.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>

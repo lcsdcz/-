@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>演示页面 - 自定义练习系统</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .demo-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .demo-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .demo-title {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .feature-highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .feature-highlight h2 {
+            margin: 0 0 15px 0;
+            text-align: center;
+        }
+        .feature-highlight p {
+            margin: 0;
+            text-align: center;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="feature-highlight">
+            <h2>🎯 古诗文自定义练习系统</h2>
+            <p>每篇诗文都有独特的练习方式，告别千篇一律的默写模式！</p>
+        </div>
+        
+        <div class="demo-section">
+            <h3 class="demo-title">✨ 新功能特色</h3>
+            <ul>
+                <li><strong>个性化练习：</strong>每篇诗文都有专门设计的练习内容</li>
+                <li><strong>多种练习模式：</strong>填前句、填后句、关键词默写等</li>
+                <li><strong>智能提示：</strong>每个练习都有相应的提示信息</li>
+                <li><strong>灵活配置：</strong>可以轻松添加新的练习类型</li>
+                <li><strong>两行显示：</strong>练习项目按两行一组显示，布局清晰</li>
+            </ul>
+        </div>
+
+        <div class="demo-section">
+            <h3 class="demo-title">📚 练习选择器演示</h3>
+            <div class="exercise-selector">
+                <h4>选择练习方式：</h4>
+                <div class="exercise-options">
+                    <div class="exercise-option">
+                        <h5>经典名句填空</h5>
+                        <p>请根据前半句内容，填写后半句</p>
+                        <span class="exercise-type-badge">填后句</span>
+                    </div>
+                    <div class="exercise-option">
+                        <h5>倒序记忆练习</h5>
+                        <p>请根据后半句内容，填写前半句</p>
+                        <span class="exercise-type-badge">填前句</span>
+                    </div>
+                    <div class="exercise-option">
+                        <h5>重点字词默写</h5>
+                        <p>请填写下划线处的字词</p>
+                        <span class="exercise-type-badge">自动模式</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3 class="demo-title">🎨 练习内容演示</h3>
+            <div class="exercise-content">
+                <div class="exercise-instruction">
+                    <h4>练习要求：</h4>
+                    <p>请根据前半句内容，填写后半句</p>
+                </div>
+                <div class="exercise-text">
+                    <div class="exercise-row">
+                        <div style="flex: 1; margin-right: 10px;">
+                            <div class="exercise-item">
+                                <span class="exercise-number">1.</span>
+                                <span class="blank">_____</span>在河之洲
+                                <span class="hint">💡 鸟儿在哪里？</span>
+                            </div>
+                        </div>
+                        <div style="flex: 1; margin-left: 10px;">
+                            <div class="exercise-item">
+                                <span class="exercise-number">2.</span>
+                                <span class="blank">_____</span>君子好逑
+                                <span class="hint">💡 什么样的女子？</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="exercise-row">
+                        <div style="flex: 1; margin-right: 10px;">
+                            <div class="exercise-item">
+                                <span class="exercise-number">3.</span>
+                                <span class="blank">_____</span>左右流之
+                                <span class="hint">💡 水草如何？</span>
+                            </div>
+                        </div>
+                        <div style="flex: 1; margin-left: 10px;">
+                            <div class="exercise-item">
+                                <span class="exercise-number">4.</span>
+                                <span class="blank">_____</span>寤寐求之
+                                <span class="hint">💡 日夜思念</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="exercise-info">
+                    <p>总共 4 道题目，请在下方输入框中按顺序填写所有答案，用逗号分隔</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3 class="demo-title">🔧 数据结构说明</h3>
+            <p>新的数据结构为每篇诗文提供了灵活的练习配置：</p>
+            <pre style="background: #f8f9fa; padding: 15px; border-radius: 8px; overflow-x: auto;">
+{
+    title: '关雎',
+    author: '《诗经》',
+    content: '关关雎鸠，在河之洲...',
+    exercises: [
+        {
+            type: 'fillBack',
+            title: '经典名句填空',
+            description: '请根据前半句内容，填写后半句',
+            items: [
+                {
+                    front: '关关雎鸠',
+                    back: '在河之洲',
+                    hint: '鸟儿在哪里？'
+                }
+            ]
+        }
+    ]
+}</pre>
+        </div>
+
+        <div class="demo-section">
+            <h3 class="demo-title">📱 响应式设计</h3>
+            <p>系统完全支持移动设备，在不同屏幕尺寸下都能提供良好的用户体验：</p>
+            <ul>
+                <li>移动端：练习选项垂直排列，触摸友好</li>
+                <li>平板端：练习选项网格布局，充分利用空间</li>
+                <li>桌面端：完整的多列布局，信息展示丰富</li>
+            </ul>
+        </div>
+
+        <div class="demo-section">
+            <h3 class="demo-title">🚀 使用方法</h3>
+            <ol>
+                <li>选择学习模式（默写/背诵）</li>
+                <li>选择章节（必修一/必修二等）</li>
+                <li>选择具体的诗文</li>
+                <li>从多种练习方式中选择一种</li>
+                <li>完成练习并查看答案对比</li>
+            </ol>
+            <p style="text-align: center; margin-top: 20px;">
+                <a href="index.html" style="background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">开始体验完整功能</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

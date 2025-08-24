@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古诗文默写新数据结构测试</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #007bff;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .poem-info {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 5px 0;
+        }
+        .question-item {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 5px 0;
+            border-left: 3px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <h1>古诗文默写新数据结构测试页面</h1>
+    
+    <div class="container">
+        <h2>测试概述</h2>
+        <p>本页面用于测试重新整理后的古诗文默写数据结构，验证前后文默写和理解性默写两大类功能是否正常工作。</p>
+    </div>
+
+    <div class="container">
+        <h2>1. 数据结构加载测试</h2>
+        <div class="test-section">
+            <button onclick="testDataStructure()">测试数据结构</button>
+            <div id="structure-test-result"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>2. 前后文默写测试</h2>
+        <div class="test-section">
+            <button onclick="testContextualExercises()">测试前后文默写</button>
+            <div id="contextual-test-result"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>3. 理解性默写测试</h2>
+        <div class="test-section">
+            <button onclick="testComprehensiveExercises()">测试理解性默写</button>
+            <div id="comprehensive-test-result"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>4. 工具函数测试</h2>
+        <div class="test-section">
+            <button onclick="testUtilityFunctions()">测试工具函数</button>
+            <div id="utility-test-result"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>5. 多篇组合练习测试</h2>
+        <div class="test-section">
+            <button onclick="testMultiPoemExercises()">测试多篇组合练习</button>
+            <div id="multi-test-result"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>6. 随机抽题测试</h2>
+        <div class="test-section">
+            <button onclick="testRandomQuestions()">测试随机抽题</button>
+            <div id="random-test-result"></div>
+        </div>
+    </div>
+
+    <script src="poems-data.js"></script>
+    <script>
+        // 测试数据结构
+        function testDataStructure() {
+            const resultDiv = document.getElementById('structure-test-result');
+            let result = '<div class="test-result">';
+            
+            try {
+                // 检查基本结构
+                if (poemDatabase && poemDatabase.contextual && poemDatabase.comprehensive) {
+                    result += '<div class="success">✓ 基本数据结构加载成功</div>';
+                    
+                    // 统计数量
+                    const contextualCount = Object.keys(poemDatabase.contextual).length;
+                    const comprehensiveCount = Object.keys(poemDatabase.comprehensive).length;
+                    
+                    result += `<div class="poem-info">前后文默写类: ${contextualCount} 篇</div>`;
+                    result += `<div class="poem-info">理解性默写类: ${comprehensiveCount} 篇</div>`;
+                    
+                    // 检查ID唯一性
+                    const allIds = new Set();
+                    let hasDuplicate = false;
+                    
+                    // 检查前后文默写
+                    for (let key in poemDatabase.contextual) {
+                        const poem = poemDatabase.contextual[key];
+                        if (allIds.has(poem.id)) {
+                            hasDuplicate = true;
+                            break;
+                        }
+                        allIds.add(poem.id);
+                        
+                        // 检查句子ID
+                        poem.sentences.forEach(sentence => {
+                            if (allIds.has(sentence.id)) {
+                                hasDuplicate = true;
+                            }
+                            allIds.add(sentence.id);
+                        });
+                    }
+                    
+                    // 检查理解性默写
+                    for (let key in poemDatabase.comprehensive) {
+                        const comp = poemDatabase.comprehensive[key];
+                        if (allIds.has(comp.id)) {
+                            hasDuplicate = true;
+                            break;
+                        }
+                        allIds.add(comp.id);
+                        
+                        // 检查问题ID
+                        comp.questions.forEach(q => {
+                            if (allIds.has(q.id)) {
+                                hasDuplicate = true;
+                            }
+                            allIds.add(q.id);
+                        });
+                    }
+                    
+                    if (!hasDuplicate) {
+                        result += '<div class="success">✓ 所有ID唯一性检查通过</div>';
+                    } else {
+                        result += '<div class="error">✗ 发现重复ID</div>';
+                    }
+                    
+                } else {
+                    result += '<div class="error">✗ 数据结构加载失败</div>';
+                }
+                
+            } catch (error) {
+                result += `<div class="error">✗ 测试过程中出现错误: ${error.message}</div>`;
+            }
+            
+            result += '</div>';
+            resultDiv.innerHTML = result;
+        }
+
+        // 测试前后文默写
+        function testContextualExercises() {
+            const resultDiv = document.getElementById('contextual-test-result');
+            let result = '<div class="test-result">';
+            
+            try {
+                const quanxue = utils.getPoemById('01_quanxue');
+                if (quanxue) {
+                    result += '<div class="success">✓ 成功获取《劝学》</div>';
+                    result += `<div class="poem-info">标题: ${quanxue.title}</div>`;
+                    result += `<div class="poem-info">作者: ${quanxue.author}</div>`;
+                    result += `<div class="poem-info">句子数量: ${quanxue.sentences.length}</div>`;
+                    
+                    // 显示几个示例句子
+                    result += '<h4>示例句子:</h4>';
+                    quanxue.sentences.slice(0, 3).forEach(sentence => {
+                        result += `<div class="question-item">`;
+                        result += `<strong>ID:</strong> ${sentence.id}<br>`;
+                        result += `<strong>前半句:</strong> ${sentence.front}<br>`;
+                        result += `<strong>后半句:</strong> ${sentence.back || '(无)'}`;
+                        result += `</div>`;
+                    });
+                    
+                } else {
+                    result += '<div class="error">✗ 获取《劝学》失败</div>';
+                }
+                
+            } catch (error) {
+                result += `<div class="error">✗ 测试过程中出现错误: ${error.message}</div>`;
+            }
+            
+            result += '</div>';
+            resultDiv.innerHTML = result;
+        }
+
+        // 测试理解性默写
+        function testComprehensiveExercises() {
+            const resultDiv = document.getElementById('comprehensive-test-result');
+            let result = '<div class="test-result">';
+            
+            try {
+                const quanxueComp = utils.getComprehensiveById('01_quanxue_comp');
+                if (quanxueComp) {
+                    result += '<div class="success">✓ 成功获取《劝学》理解性默写</div>';
+                    result += `<div class="poem-info">标题: ${quanxueComp.title}</div>`;
+                    result += `<div class="poem-info">对应原文: ${quanxueComp.sourcePoem}</div>`;
+                    result += `<div class="poem-info">问题数量: ${quanxueComp.questions.length}</div>`;
+                    
+                    // 显示问题示例
+                    result += '<h4>问题示例:</h4>';
+                    quanxueComp.questions.slice(0, 2).forEach(q => {
+                        result += `<div class="question-item">`;
+                        result += `<strong>ID:</strong> ${q.id}<br>`;
+                        result += `<strong>问题:</strong> ${q.question}<br>`;
+                        result += `<strong>答案:</strong> ${q.answer}<br>`;
+                        result += `<strong>提示:</strong> ${q.hint}`;
+                        result += `</div>`;
+                    });
+                    
+                } else {
+                    result += '<div class="error">✗ 获取理解性默写失败</div>';
+                }
+                
+            } catch (error) {
+                result += `<div class="error">✗ 测试过程中出现错误: ${error.message}</div>`;
+            }
+            
+            result += '</div>';
+            resultDiv.innerHTML = result;
+        }
+
+        // 测试工具函数
+        function testUtilityFunctions() {
+            const resultDiv = document.getElementById('utility-test-result');
+            let result = '<div class="test-result">';
+            
+            try {
+                // 测试获取所有古诗文
+                const allPoems = utils.getAllPoems();
+                result += `<div class="success">✓ 成功获取所有古诗文列表</div>`;
+                result += `<div class="poem-info">总数: ${allPoems.length}</div>`;
+                
+                // 显示古诗文列表
+                result += '<h4>古诗文列表:</h4>';
+                allPoems.forEach(poem => {
+                    result += `<div class="poem-info">${poem.id} - ${poem.title} (${poem.author}) - ${poem.type}</div>`;
+                });
+                
+                // 测试随机打乱
+                const testArray = [1, 2, 3, 4, 5];
+                const shuffled = utils.shuffleArray(testArray);
+                result += `<div class="poem-info">随机打乱测试: [${testArray.join(',')}] → [${shuffled.join(',')}]</div>`;
+                
+            } catch (error) {
+                result += `<div class="error">✗ 测试过程中出现错误: ${error.message}</div>`;
+            }
+            
+            result += '</div>';
+            resultDiv.innerHTML = result;
+        }
+
+        // 测试多篇组合练习
+        function testMultiPoemExercises() {
+            const resultDiv = document.getElementById('multi-test-result');
+            let result = '<div class="test-result">';
+            
+            try {
+                const classicCombination = multiPoemExercises.classic_combination;
+                if (classicCombination) {
+                    result += '<div class="success">✓ 成功获取经典名句组合练习配置</div>';
+                    result += `<div class="poem-info">标题: ${classicCombination.title}</div>`;
+                    result += `<div class="poem-info">描述: ${classicCombination.description}</div>`;
+                    result += `<div class="poem-info">包含古诗文: ${classicCombination.poems.join(', ')}</div>`;
+                    result += `<div class="poem-info">练习类型: ${classicCombination.types.join(', ')}</div>`;
+                    result += `<div class="poem-info">随机数量: ${classicCombination.randomCount}</div>`;
+                    
+                } else {
+                    result += '<div class="error">✗ 获取多篇组合练习配置失败</div>';
+                }
+                
+            } catch (error) {
+                result += `<div class="error">✗ 测试过程中出现错误: ${error.message}</div>`;
+            }
+            
+            result += '</div>';
+            resultDiv.innerHTML = result;
+        }
+
+        // 测试随机抽题
+        function testRandomQuestions() {
+            const resultDiv = document.getElementById('random-test-result');
+            let result = '<div class="test-result">';
+            
+            try {
+                // 测试从多篇古诗文中随机抽取题目
+                const randomQuestions = utils.getRandomQuestions(
+                    ['01_quanxue', '02_xiaoyaoyou'],
+                    3,
+                    'fillBack'
+                );
+                
+                if (randomQuestions && randomQuestions.length > 0) {
+                    result += '<div class="success">✓ 成功随机抽取题目</div>';
+                    result += `<div class="poem-info">抽取数量: ${randomQuestions.length}</div>`;
+                    
+                    // 显示随机题目
+                    result += '<h4>随机题目:</h4>';
+                    randomQuestions.forEach((q, index) => {
+                        result += `<div class="question-item">`;
+                        result += `<strong>题目 ${index + 1}:</strong><br>`;
+                        result += `<strong>来源:</strong> ${q.sourcePoem}<br>`;
+                        result += `<strong>前半句:</strong> ${q.front}<br>`;
+                        result += `<strong>后半句:</strong> ${q.back}`;
+                        result += `</div>`;
+                    });
+                    
+                } else {
+                    result += '<div class="error">✗ 随机抽题失败</div>';
+                }
+                
+            } catch (error) {
+                result += `<div class="error">✗ 测试过程中出现错误: ${error.message}</div>`;
+            }
+            
+            result += '</div>';
+            resultDiv.innerHTML = result;
+        }
+
+        // 页面加载完成后自动运行第一个测试
+        window.onload = function() {
+            testDataStructure();
+        };
+    </script>
+</body>
+</html>

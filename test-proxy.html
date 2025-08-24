@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代理API测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <h1>代理API测试页面</h1>
+    
+    <div class="test-section">
+        <h3>1. 测试代理API是否可访问</h3>
+        <button onclick="testProxyAccess()">测试代理API访问</button>
+        <div id="access-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>2. 测试代理API功能</h3>
+        <input type="text" id="test-message" placeholder="输入测试消息" value="你好" style="width: 200px; padding: 5px;">
+        <button onclick="testProxyFunction()">发送测试消息</button>
+        <div id="function-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>3. 测试环境变量</h3>
+        <button onclick="testEnvironment()">测试环境变量</button>
+        <div id="env-result" class="result"></div>
+    </div>
+
+    <script>
+        async function testProxyAccess() {
+            const resultDiv = document.getElementById('access-result');
+            resultDiv.textContent = '测试中...';
+            resultDiv.className = 'result';
+            
+            try {
+                const response = await fetch('/api/proxy', {
+                    method: 'GET'
+                });
+                
+                if (response.status === 405) {
+                    resultDiv.textContent = '✅ 代理API可访问！返回405是正常的（只允许POST请求）';
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.textContent = `❌ 代理API返回异常状态码: ${response.status}`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = `❌ 代理API访问失败: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+        
+        async function testProxyFunction() {
+            const resultDiv = document.getElementById('function-result');
+            const message = document.getElementById('test-message').value;
+            
+            if (!message) {
+                resultDiv.textContent = '请输入测试消息';
+                resultDiv.className = 'result error';
+                return;
+            }
+            
+            resultDiv.textContent = '发送中...';
+            resultDiv.className = 'result';
+            
+            try {
+                const response = await fetch('/api/proxy', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.textContent = `✅ 代理API工作正常！\n\n响应数据:\n${JSON.stringify(data, null, 2)}`;
+                    resultDiv.className = 'result success';
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.textContent = `❌ 代理API返回错误: ${response.status}\n\n错误信息:\n${errorText}`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = `❌ 请求失败: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+        
+        async function testEnvironment() {
+            const resultDiv = document.getElementById('env-result');
+            resultDiv.textContent = '测试中...';
+            resultDiv.className = 'result';
+            
+            try {
+                const response = await fetch('/api/proxy', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: 'test' })
+                });
+                
+                if (response.status === 500) {
+                    const errorData = await response.json();
+                    if (errorData.message && errorData.message.includes('API key not configured')) {
+                        resultDiv.textContent = '❌ 环境变量未正确配置：OPENAI_API_KEY未设置';
+                        resultDiv.className = 'result error';
+                    } else {
+                        resultDiv.textContent = `❌ 其他错误: ${errorData.message}`;
+                        resultDiv.className = 'result error';
+                    }
+                } else if (response.ok) {
+                    resultDiv.textContent = '✅ 环境变量配置正确！';
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.textContent = `❌ 未知错误: ${response.status}`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = `❌ 测试失败: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>理解性默写按钮样式测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        .result {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .success {
+            background: #e6ffe6;
+            color: #388e3c;
+        }
+        .info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        /* 模拟标题栏样式 */
+        .title-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .title-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        /* 理解性默写控制按钮样式 */
+        .comprehensive-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .comprehensive-controls .shuffle-btn {
+            background: linear-gradient(135deg, #6f42c1, #5a32a3);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .comprehensive-controls .shuffle-btn:hover {
+            background: linear-gradient(135deg, #5a32a3, #4a2a8a);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(111, 66, 193, 0.3);
+        }
+        
+        .comprehensive-controls .show-all-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .comprehensive-controls .show-all-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(40, 167, 69, 0.3);
+        }
+        
+        .comprehensive-controls .hide-all-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .comprehensive-controls .hide-all-btn:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(220, 53, 69, 0.3);
+        }
+        
+        .font-size-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .font-size-controls label {
+            font-weight: 500;
+            color: #333;
+            min-width: 60px;
+            font-size: 0.8rem;
+        }
+        
+        .font-size-controls input[type="range"] {
+            width: 80px;
+            height: 4px;
+            border-radius: 2px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .font-size-controls input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+        }
+        
+        .font-size-controls input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .button-demo {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>理解性默写按钮样式优化测试</h1>
+        
+        <div class="test-section">
+            <h3>1. 按钮样式优化</h3>
+            <div class="result success">
+                ✓ 已将控制按钮移到标题栏中<br>
+                ✓ 按钮变小更美观<br>
+                ✓ 添加了悬停效果<br>
+                ✓ 按钮颜色区分功能<br>
+                ✓ 与字体调整控件完美融合
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>2. 新的标题栏布局演示</h3>
+            <div class="title-container">
+                <span class="title-text">关雎</span>
+                <div class="comprehensive-controls">
+                    <button class="shuffle-btn">🔀 打乱顺序</button>
+                    <button class="show-all-btn">👁️ 显示所有答案</button>
+                    <button class="hide-all-btn">🙈 隐藏所有答案</button>
+                </div>
+                <div class="font-size-controls">
+                    <label>题目字体：</label>
+                    <input type="range" min="12" max="24" value="16">
+                    <span>16px</span>
+                    <label>答案字体：</label>
+                    <input type="range" min="12" max="24" value="16">
+                    <span>16px</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>3. 按钮功能说明</h3>
+            <div class="result info">
+                <strong>🔀 打乱顺序</strong>：紫色渐变按钮，重新打乱题目顺序<br>
+                <strong>👁️ 显示所有答案</strong>：绿色按钮，一次性显示所有题目的答案<br>
+                <strong>🙈 隐藏所有答案</strong>：红色按钮，一次性隐藏所有题目的答案
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>4. 按钮样式特点</h3>
+            <div class="result info">
+                ✓ 小尺寸：padding 6px 12px，font-size 12px<br>
+                ✓ 圆角设计：border-radius 15px<br>
+                ✓ 悬停效果：轻微上移和阴影<br>
+                ✓ 颜色区分：紫色/绿色/红色<br>
+                ✓ 图标+文字：更直观的功能提示
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>5. 修改的代码位置</h3>
+            <div class="result info">
+                1. script.js：修改了 displayComprehensiveQuestions 函数<br>
+                2. script.js：修改了 shuffleComprehensiveQuestions 函数<br>
+                3. styles.css：添加了 .comprehensive-controls 样式<br>
+                4. 按钮从题目容器移到标题栏<br>
+                5. 添加了悬停效果和颜色区分
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>6. 测试建议</h3>
+            <div class="result info">
+                1. 打开主页面 index.html<br>
+                2. 选择"理解性默写"章节<br>
+                3. 选择任意文章或"全部随机"<br>
+                4. 验证标题栏是否显示新的按钮布局<br>
+                5. 测试按钮的悬停效果<br>
+                6. 验证按钮功能是否正常
+            </div>
+        </div>
+    </div>
+</body>
+</html>
