@@ -16,15 +16,18 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid JSON body' });
   }
 
-  const { message, max_tokens } = body || {};
+  const { message, max_tokens, apiKey, apiUrl, model } = body || {};
   if (!message || typeof message !== 'string') {
     return res.status(400).json({ error: 'Message is required' });
   }
 
+  const isProd = (process.env.NODE_ENV || '').toLowerCase() === 'production';
+
   const API_CONFIG = {
-    api_key: process.env.OPENAI_API_KEY,
-    api_url: process.env.OPENAI_API_URL || 'https://api.openai.com/v1/chat/completions',
-    model: process.env.OPENAI_MODEL || 'gpt-3.5-turbo',
+    // 为了便于本地调试：非生产环境允许 body 传入 apiKey/apiUrl/model 覆盖
+    api_key: (!isProd && apiKey) ? apiKey : process.env.OPENAI_API_KEY,
+    api_url: (!isProd && apiUrl) ? apiUrl : (process.env.OPENAI_API_URL || 'https://api.openai.com/v1/chat/completions'),
+    model: (!isProd && model) ? model : (process.env.OPENAI_MODEL || 'gpt-3.5-turbo'),
     temperature: parseFloat(process.env.OPENAI_TEMPERATURE) || 0.7,
     max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS || '600', 10),
     request_timeout_ms: parseInt(process.env.UPSTREAM_TIMEOUT_MS || '20000', 10),
@@ -84,6 +87,14 @@ export default async function handler(req, res) {
       }
 
       if (!response.ok) {
+        // 针对 401 给出更清晰提示
+        if (response.status === 401) {
+          return res.status(401).json({
+            error: 'Unauthorized',
+            message: '上游返回 401，请检查 OPENAI_API_KEY 是否有效，或在开发环境通过 body 传入 apiKey。',
+            detail: errorText,
+          });
+        }
         return res.status(response.status).json({ error: errorText });
       }
     }
