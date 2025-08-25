@@ -1,10 +1,23 @@
 // AI辅助学习功能
 const aiAssistant = {
     apiKey: '', // 不再需要在前端暴露API密钥
-    // 允许通过 window.__AI_BASE__ 覆盖 API 基础域名，恢复到 /api/proxy
-    apiUrl: (typeof window !== 'undefined' && window.__AI_BASE__)
-        ? (window.__AI_BASE__.replace(/\/$/, '') + '/api/proxy')
-        : '/api/proxy',
+    // 动态解析接口地址：支持 file:// 场景通过 window.__AI_BASE__ 指定域名
+    getApiUrl() {
+        try {
+            const base = (typeof window !== 'undefined' && window.__AI_BASE__)
+                ? window.__AI_BASE__.replace(/\/$/, '')
+                : '';
+            const proto = (typeof window !== 'undefined' && window.location && window.location.protocol) || '';
+            const isHttp = proto === 'http:' || proto === 'https:';
+
+            if (!isHttp && !base) {
+                console.error('AI接口: 当前为本地 file:// 访问。请先设置 window.__AI_BASE__ = "https://你的部署域名"');
+            }
+            return (base ? base : '') + '/api/proxy';
+        } catch {
+            return '/api/proxy';
+        }
+    },
     
     async sendMessage(message) {
         try {
@@ -17,7 +30,7 @@ const aiAssistant = {
                 if (window.__AI_DEV_CONFIG__.model) payload.model = window.__AI_DEV_CONFIG__.model;
             }
 
-            const response = await fetch(this.apiUrl, {
+            const response = await fetch(this.getApiUrl(), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -33,6 +46,9 @@ const aiAssistant = {
                 let errorJson;
                 try { errorJson = JSON.parse(errorText); } catch {}
                 console.error('AI接口错误响应:', response.status, errorJson || errorText);
+                if (response.status === 404) {
+                    console.error('提示: 如果你是本地 file:// 打开页面，请设置 window.__AI_BASE__ 为你的后端域名。');
+                }
                 throw new Error(`API请求失败: ${response.status}`);
             }
 
