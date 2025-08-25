@@ -1,15 +1,15 @@
 // AI辅助学习功能
 const aiAssistant = {
     apiKey: '', // 不再需要在前端暴露API密钥
-    // 允许通过 window.__AI_BASE__ 覆盖 API 基础域名，统一走 /api/chat （与 ENG 一致）
+    // 允许通过 window.__AI_BASE__ 覆盖 API 基础域名，恢复到 /api/proxy
     apiUrl: (typeof window !== 'undefined' && window.__AI_BASE__)
-        ? (window.__AI_BASE__.replace(/\/$/, '') + '/api/chat')
-        : '/api/chat',
+        ? (window.__AI_BASE__.replace(/\/$/, '') + '/api/proxy')
+        : '/api/proxy',
     
     async sendMessage(message) {
         try {
-            // 与 ENG 相同：发送 messages 数组
-            const payload = { messages: [{ role: 'user', content: message }] };
+            // 恢复本项目原始入参结构
+            const payload = { message };
             // 开发环境调试：允许通过全局配置透传 apiKey/apiUrl/model
             if (typeof window !== 'undefined' && window.__AI_DEV_CONFIG__ && window.__AI_DEV_CONFIG__.enable === true) {
                 if (window.__AI_DEV_CONFIG__.apiKey) payload.apiKey = window.__AI_DEV_CONFIG__.apiKey;
