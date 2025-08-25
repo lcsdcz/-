@@ -26,7 +26,7 @@ export default async function handler(req, res) {
   const API_CONFIG = {
     // 为了便于本地调试：非生产环境允许 body 传入 apiKey/apiUrl/model 覆盖
     api_key: (!isProd && apiKey) ? apiKey : process.env.OPENAI_API_KEY,
-    api_url: (!isProd && apiUrl) ? apiUrl : (process.env.OPENAI_API_URL || 'https://api.openai.com/v1/chat/completions'),
+    api_url: (!isProd && apiUrl) ? apiUrl : (process.env.OPENAI_API_URL || 'https://hk.soruxgpt.com/api/api'),
     model: (!isProd && model) ? model : (process.env.OPENAI_MODEL || 'gpt-3.5-turbo'),
     temperature: parseFloat(process.env.OPENAI_TEMPERATURE) || 0.7,
     max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS || '600', 10),
