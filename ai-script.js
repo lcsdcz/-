@@ -1,19 +1,37 @@
 // AI辅助学习功能
 const aiAssistant = {
     apiKey: '', // 不再需要在前端暴露API密钥
-    apiUrl: '/api/proxy', // 使用我们的代理API
+    // 允许通过 window.__AI_BASE__ 覆盖 API 基础域名，解决本地 file:// 或跨域部署 404
+    apiUrl: (typeof window !== 'undefined' && window.__AI_BASE__)
+        ? (window.__AI_BASE__.replace(/\/$/, '') + '/api/proxy')
+        : '/api/proxy',
     
     async sendMessage(message) {
         try {
+            const payload = { message };
+            // 开发环境调试：允许通过全局配置透传 apiKey/apiUrl/model
+            if (typeof window !== 'undefined' && window.__AI_DEV_CONFIG__ && window.__AI_DEV_CONFIG__.enable === true) {
+                if (window.__AI_DEV_CONFIG__.apiKey) payload.apiKey = window.__AI_DEV_CONFIG__.apiKey;
+                if (window.__AI_DEV_CONFIG__.apiUrl) payload.apiUrl = window.__AI_DEV_CONFIG__.apiUrl;
+                if (window.__AI_DEV_CONFIG__.model) payload.model = window.__AI_DEV_CONFIG__.model;
+            }
+
             const response = await fetch(this.apiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ message })
+                body: JSON.stringify(payload)
             });
 
             if (!response.ok) {
+                let errorText = '';
+                try {
+                    errorText = await response.text();
+                } catch {}
+                let errorJson;
+                try { errorJson = JSON.parse(errorText); } catch {}
+                console.error('AI接口错误响应:', response.status, errorJson || errorText);
                 throw new Error(`API请求失败: ${response.status}`);
             }
 
