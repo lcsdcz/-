@@ -133,7 +133,7 @@ function addMessageToChat(content, type) {
     
     const contentDiv = document.createElement('div');
     contentDiv.className = 'ai-content';
-    contentDiv.innerHTML = content.replace(/\n/g, '<br>');
+    contentDiv.innerHTML = type === 'ai' ? formatAITextToHTML(content) : content.replace(/\n/g, '<br>');
     
     messageDiv.appendChild(avatar);
     messageDiv.appendChild(contentDiv);
@@ -186,3 +186,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// 将带有 markdown 样式的文本转为“非 markdown”的简洁 HTML
+function formatAITextToHTML(text) {
+    if (!text || typeof text !== 'string') return '';
+    let s = text.replace(/\r\n?/g, '\n');
+
+    // 去掉标题井号，仅保留内容
+    s = s.replace(/^#{1,6}\s*(.+)$/gm, '$1');
+
+    // 列表项统一为圆点
+    s = s.replace(/^\s*[-*]\s+/gm, '• ');
+
+    // 粗体、斜体、行内代码去标记
+    s = s.replace(/\*\*(.*?)\*\*/g, '$1');
+    s = s.replace(/\*(.*?)\*/g, '$1');
+    s = s.replace(/`([^`]+)`/g, '$1');
+
+    // 水平线与多余连字符去除
+    s = s.replace(/^[-*_]{3,}\s*$/gm, '');
+
+    // 多个空行折叠
+    s = s.replace(/\n{3,}/g, '\n\n');
+
+    // 转换换行
+    s = s.replace(/\n/g, '<br>');
+
+    return s;
+}
